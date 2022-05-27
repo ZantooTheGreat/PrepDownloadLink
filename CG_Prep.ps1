@@ -267,30 +267,17 @@ function Prep-Users-Localadmin {
     Add-LocalGroupMember -Group Administrators -Member "$env:USERDNSDOMAIN\Domain Users"
 }
 function Prep-User {
-    # Dell 3060 Preinstalled list:
-    #Get-AppxPackage -allusers king.com.CandyCrushFriends | Remove-AppxPackage -allusers
-    #Get-AppxPackage -allusers king.com.CandyCrushSaga | Remove-AppxPackage -allusers
-    Get-AppxPackage -allusers Microsoft.Office.Desktop | Remove-AppxPackage -allusers
-    Get-AppxPackage -allusers Microsoft.Office.OneNote | Remove-AppxPackage -allusers
-    #Get-AppxPackage -allusers Microsoft.SkypeApp | Remove-AppxPackage -allusers
-    #Get-AppxPackage -allusers 7EE7776C.LinkedInforWindows | Remove-AppxPackage -allusers
-    #Get-AppxPackage -allusers Microsoft.BingNews | Remove-AppxPackage -allusers
-    #Get-AppxPackage -allusers Microsoft.BingTranslator | Remove-AppxPackage -allusers
-    #Get-AppxPackage -allusers Microsoft.BingWeather | Remove-AppxPackage -allusers
-    #Get-AppxPackage -allusers Microsoft.MixedReality.Portal | Remove-AppxPackage -allusers
-    #Get-AppxPackage -allusers Microsoft.People | Remove-AppxPackage -allusers
-    #Get-AppxPackage -allusers Microsoft.XboxApp | Remove-AppxPackage -allusers
-    #Get-AppxPackage -allusers Microsoft.YourPhone | Remove-AppxPackage -allusers
-    #Get-AppxPackage -allusers Microsoft.ZuneMusic | Remove-AppxPackage -allusers
-    #Get-AppxPackage -allusers Microsoft.ZuneVideo | Remove-AppxPackage -allusers
-    #Get-AppxPackage -allusers NORDCURRENT.COOKINGFEVER | Remove-AppxPackage -allusers
-    #Get-AppxPackage -allusers SpotIfyAB.SpotIfyMusic | Remove-AppxPackage -allusers
-    get-appxpackage -allusers Microsoft.MicrosoftOfficeHub | Remove-AppxPackage -allusers
-    #get-appxpackage -allusers Microsoft.MicrosoftSolitaireCollection | remove-appxpackage -allusers
-    #get-appxpackage -allusers DellInc.DellCommandUpdate | remove-appxpackage -allusers
-    #get-appxpackage -allusers DellInc.DellDigitalDelivery | remove-appxpackage -allusers
-    #get-appxpackage -allusers DellInc.DellSupportAssistforPCs | remove-appxpackage -allusers
-    #get-appxpackage -allusers Dell* | remove-appxpackage -allusers
+
+    Get-AppxPackage * | Remove-AppxPackage
+    Write-Verbose "Removed windows apps"
+
+    Get-AppxPackage -allusers Microsoft.Windows.Photos | Foreach {Add-AppxPackage -DisableDevelopmentMode -Register "$($_.InstallLocation)\AppXManifest.xml"}
+    Get-AppxPackage -allusers Microsoft.WindowsCamera | Foreach {Add-AppxPackage -DisableDevelopmentMode -Register "$($_.InstallLocation)\AppXManifest.xml"}
+    Get-AppxPackage -allusers Microsoft.WindowsCalculator | Foreach {Add-AppxPackage -DisableDevelopmentMode -Register "$($_.InstallLocation)\AppXManifest.xml"}
+    Get-AppxPackage -allusers Microsoft.WindowsStore | Foreach {Add-AppxPackage -DisableDevelopmentMode -Register "$($_.InstallLocation)\AppXManifest.xml"}
+    # Prevent reinstall of default apps with new user
+    Get-AppXProvisionedPackage -Online | Remove-AppxProvisionedPackage –Online
+    
     Clear-Host
     # Start Menu: Disable Bing Search Results
     Set-ItemProperty -Path HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Search -Name BingSearchEnabled -Type DWord -Value 0
